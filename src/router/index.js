@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2025-04-03 17:12:22
  * @LastEditors: diaochan
- * @LastEditTime: 2025-04-03 21:47:15
+ * @LastEditTime: 2025-04-03 23:20:10
  * @Description: 
  */
 import { createRouter, createWebHistory } from 'vue-router';
@@ -13,6 +13,12 @@ const routes = [
     name: 'Home',
     component: () => import('@/views/Transfer.vue'),
     meta: { title: '代付交易' }
+  },
+  {
+    path: '/batch',
+    name: 'BatchTransfer',
+    component: () => import('@/views/BatchTransfer.vue'),
+    meta: { title: '批量代付交易' }
   }
 ];
 

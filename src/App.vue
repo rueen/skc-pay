@@ -1,11 +1,19 @@
 <template>
   <div class="app-container">
     <router-view />
+    <van-tabbar v-model="active" route>
+      <van-tabbar-item icon="cash-back-record" to="/" name="home">单笔代付</van-tabbar-item>
+      <van-tabbar-item icon="orders-o" to="/batch" name="batch">批量代付</van-tabbar-item>
+    </van-tabbar>
   </div>
 </template>
 
 <script setup>
-// App级别逻辑
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const active = ref(route.path === '/batch' ? 'batch' : 'home');
 </script>
 
 <style>
@@ -28,5 +36,6 @@ html, body {
   margin: 0 auto;
   min-height: 100vh;
   background-color: #ffffff;
+  padding-bottom: 50px; /* 为底部导航栏预留空间 */
 }
 </style> 
