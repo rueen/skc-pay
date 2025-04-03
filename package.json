@@ -1,0 +1,28 @@
+{
+  "name": "h5-payment-app",
+  "version": "1.0.0",
+  "description": "H5代付交易应用",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "keywords": [
+    "payment",
+    "vue",
+    "h5"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "vant": "^4.8.5",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^4.5.1"
+  }
+} 
