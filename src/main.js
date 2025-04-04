@@ -16,7 +16,8 @@ import {
   TabbarItem,
   Uploader,
   Cell,
-  Dialog
+  Dialog,
+  Icon
 } from 'vant';
 import 'vant/lib/index.css';
 
@@ -38,6 +39,7 @@ app.use(TabbarItem);
 app.use(Uploader);
 app.use(Cell);
 app.use(Dialog);
+app.use(Icon);
 
 app.use(router);
 app.mount('#app'); 

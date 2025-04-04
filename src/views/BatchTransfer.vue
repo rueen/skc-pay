@@ -21,7 +21,10 @@
         </van-uploader>
         
         <div v-if="fileInfo.name" class="file-info">
-          <div class="file-name">{{ fileInfo.name }}</div>
+          <div class="file-name">
+            {{ fileInfo.name }}
+            <van-icon name="cross" class="clear-icon" @click="clearFile" />
+          </div>
           <div class="file-records">Total {{ records.length }} records</div>
         </div>
       </div>
@@ -29,7 +32,9 @@
       <div v-if="records.length > 0" class="records-preview">
         <div class="preview-header">
           <div class="preview-title">Records Preview</div>
-          <div class="preview-count">Total {{ records.length }} records</div>
+          <div class="preview-count">
+            Total {{ records.length }} records
+          </div>
         </div>
         
         <div class="records-container">
@@ -61,7 +66,9 @@
       <div v-if="processedRecords.length > 0" class="process-result">
         <div class="result-header">
           <div class="result-title">Processing Result</div>
-          <div class="result-count">Total {{ processedRecords.length }} records</div>
+          <div class="result-count">
+            Total {{ processedRecords.length }} records
+          </div>
         </div>
         
         <van-cell-group inset>
@@ -190,6 +197,13 @@ const generateOrderNo = () => {
   return `ORDER${timestamp}${random}`;
 };
 
+// 清除文件
+const clearFile = () => {
+  fileList.value = [];
+  fileInfo.value = { name: '', size: 0 };
+  records.value = [];
+};
+
 // 开始处理批量交易
 const startProcessing = async () => {
   if (records.value.length === 0) {
@@ -202,6 +216,7 @@ const startProcessing = async () => {
   try {
     processing.value = true;
     processedRecords.value = [];
+    
     for (const record of recordsToProcess) {
       try {
         const channel = PAYMENT_CHANNELS[record.type];
@@ -294,6 +309,15 @@ const startProcessing = async () => {
 .file-name {
   font-weight: bold;
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-icon {
+  margin-left: 8px;
+  color: #ff4d4f;
+  cursor: pointer;
 }
 
 .records-preview {
@@ -324,6 +348,8 @@ const startProcessing = async () => {
 .preview-count, .result-count {
   font-size: 14px;
   color: #666;
+  display: flex;
+  align-items: center;
 }
 
 .action-section {
