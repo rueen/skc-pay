@@ -3,7 +3,6 @@ import { showToast } from 'vant';
 import { createHash } from '@/utils/crypto';
 
 const API_BASE_URL = 'https://72pay.la2568.site/api';
-const DEBUG_MODE = true;
 
 // 创建axios实例
 const api = axios.create({
@@ -57,13 +56,6 @@ export async function createTransfer(data, secretKey) {
   const signStr = createSignature(data, secretKey);
   data.sign = signStr;
   
-  // 开发调试 - 验证签名计算
-  if (DEBUG_MODE) {
-    console.log('======= 代付请求 - 签名验证 =======');
-    console.log('请求数据:', data);
-    console.log('计算得到的签名:', signStr);
-  }
-  
   return api.post('/daifu', data);
 }
 
@@ -104,10 +96,6 @@ function createSignature(data, secretKey) {
   
   // 添加密钥
   signStr += `key=${secretKey}`;
-  
-  if (DEBUG_MODE) {
-    console.log('签名原始字符串:', signStr);
-  }
   
   // 使用MD5进行加密并转为大写
   return createHash(signStr);

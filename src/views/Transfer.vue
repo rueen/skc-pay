@@ -147,7 +147,7 @@ const onSubmit = async () => {
 
 <style scoped>
 .transfer-container {
-  min-height: 100vh;
+  height: 100%;
 }
 
 .content {

@@ -1,7 +1,7 @@
 <template>
   <div class="batch-transfer-container">
     <van-nav-bar 
-      title="批量代付交易" 
+      title="Batch Transfer" 
       fixed
     />
     
@@ -15,21 +15,21 @@
           :before-read="beforeRead"
         >
           <div class="upload-button">
-            <van-button icon="plus" type="primary">上传文件</van-button>
-            <div class="upload-tip">支持 .txt 格式，每行一条记录</div>
+            <van-button icon="plus" type="primary">Upload File</van-button>
+            <div class="upload-tip">Support .txt format, one line per record</div>
           </div>
         </van-uploader>
         
         <div v-if="fileInfo.name" class="file-info">
           <div class="file-name">{{ fileInfo.name }}</div>
-          <div class="file-records">共 {{ records.length }} 条记录</div>
+          <div class="file-records">Total {{ records.length }} records</div>
         </div>
       </div>
       
       <div v-if="records.length > 0" class="records-preview">
         <div class="preview-header">
-          <div class="preview-title">记录预览</div>
-          <div class="preview-count">共 {{ records.length }} 条记录</div>
+          <div class="preview-title">Records Preview</div>
+          <div class="preview-count">Total {{ records.length }} records</div>
         </div>
         
         <div class="records-container">
@@ -38,7 +38,7 @@
               v-for="(record, index) in records"
               :key="index"
               :title="`${record.name} - ${record.accountNumber}`"
-              :value="`${record.amount} PHP`"
+              :value="`${record.amount}`"
               :label="record.type === 'gcash' ? 'GCash' : 'Maya'"
             />
           </van-cell-group>
@@ -54,14 +54,14 @@
           :loading="processing"
           @click="startProcessing"
         >
-          开始处理 ({{ Math.min(50, records.length) }}条)
+          Start Processing ({{ Math.min(50, records.length) }} records)
         </van-button>
       </div>
       
       <div v-if="processedRecords.length > 0" class="process-result">
         <div class="result-header">
-          <div class="result-title">处理结果</div>
-          <div class="result-count">共 {{ processedRecords.length }} 条</div>
+          <div class="result-title">Processing Result</div>
+          <div class="result-count">Total {{ processedRecords.length }} records</div>
         </div>
         
         <van-cell-group inset>
@@ -69,8 +69,8 @@
             v-for="(record, index) in processedRecords"
             :key="index"
             :title="`${record.name} - ${record.accountNumber}`"
-            :value="`${record.amount} PHP`"
-            :label="record.status ? '成功' : '失败'"
+            :value="`${record.amount}`"
+            :label="record.status ? 'Success' : 'Failed'"
             :icon="record.status ? 'success' : 'cross'"
           />
         </van-cell-group>
@@ -100,7 +100,7 @@ const PAYMENT_CHANNELS = {
     merchantId: 'skc01',
     secretKey: '0097b781a439442e1b6424e3d740efb1'
   },
-  PMP: {
+  pmp: {
     name: 'Maya',
     bank: 'PMP',
     merchantId: 'skc01-paymaya',
@@ -111,7 +111,7 @@ const PAYMENT_CHANNELS = {
 // 文件上传前检查
 const beforeRead = (file) => {
   if (file.type !== 'text/plain') {
-    showToast('请上传txt文本文件');
+    showToast('Please upload a txt text file');
     return false;
   }
   return true;
@@ -128,8 +128,8 @@ const afterRead = async (file) => {
     const content = await readFileContent(file.file);
     parseFileContent(content);
   } catch (error) {
-    showToast('文件读取失败');
-    console.error('文件读取失败:', error);
+    showToast('File reading failed');
+    console.error('File reading failed:', error);
   }
 };
 
@@ -159,7 +159,7 @@ const parseFileContent = (content) => {
       if (type && amount && name && accountNumber) {
         // 验证类型是否支持
         if (type.toLowerCase() !== 'gcash' && type.toLowerCase() !== 'pmp') {
-          showToast(`不支持的渠道类型: ${type}`);
+          showToast(`Unsupported channel type: ${type}`);
           continue;
         }
         
@@ -173,14 +173,14 @@ const parseFileContent = (content) => {
       }
     }
   }
-  
-  records.value = parsedRecords;
-  
-  if (records.value.length === 0) {
-    showToast('没有找到有效的记录');
-  } else if (records.value.length > 50) {
-    showToast('记录数超过50条，将只处理前50条');
+  if (parsedRecords.length === 0) {
+    showToast('No valid records found');
+  } else if (parsedRecords.length > 50) {
+    showDialog({
+      message:'Records number exceeds 50, only the first 50 will be processed'
+    });
   }
+  records.value = parsedRecords.slice(0, 50);
 };
 
 // 生成订单号
@@ -193,7 +193,7 @@ const generateOrderNo = () => {
 // 开始处理批量交易
 const startProcessing = async () => {
   if (records.value.length === 0) {
-    showToast('没有可处理的记录');
+    showToast('No records to process');
     return;
   }
   
@@ -202,7 +202,6 @@ const startProcessing = async () => {
   try {
     processing.value = true;
     processedRecords.value = [];
-    
     for (const record of recordsToProcess) {
       try {
         const channel = PAYMENT_CHANNELS[record.type];
@@ -218,23 +217,23 @@ const startProcessing = async () => {
         };
         
         // 调用API
-        const result = await createTransfer(requestData, channel.secretKey);
+        // const result = await createTransfer(requestData, channel.secretKey);
         
         // 记录处理结果
         processedRecords.value.push({
           ...record,
           status: true,
-          message: '成功'
+          message: 'Success'
         });
         
       } catch (error) {
-        console.error('处理记录失败:', error);
+        console.error('Processing record failed:', error);
         
         // 记录处理失败结果
         processedRecords.value.push({
           ...record,
           status: false,
-          message: error.message || '处理失败'
+          message: error.message || 'Processing failed'
         });
       }
       
@@ -243,11 +242,11 @@ const startProcessing = async () => {
     }
     
     const successCount = processedRecords.value.filter(r => r.status).length;
-    showToast(`处理完成，成功: ${successCount}, 失败: ${processedRecords.value.length - successCount}`);
+    showToast(`Processing completed, Success: ${successCount}, Failed: ${processedRecords.value.length - successCount}`);
     
   } catch (error) {
-    showToast('批量处理失败');
-    console.error('批量处理失败:', error);
+    showToast('Batch processing failed');
+    console.error('Batch processing failed:', error);
   } finally {
     processing.value = false;
   }
